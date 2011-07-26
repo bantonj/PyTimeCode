@@ -1,4 +1,4 @@
 import pytimecode
 
-class DownloadFile(pytimecode.PyTimeCode):
+class PyTimeCode(pytimecode.PyTimeCode):
     pass
