@@ -13,7 +13,7 @@ Copyright Joshua Banton"""
 
 
 class PyTimeCode(object):
-    def __init__(self, framerate, start_timecode = None, frames = None, drop_frame = False, iter_return="tc"):
+    def __init__(self, framerate, start_timecode = None, start_seconds=None, frames = None, drop_frame = False, iter_return="tc"):
         """frame rate can be string '60', '59.94', '50', '30', '29.97', '25', '24', '23.98', or 'ms'"""
         self.framerate = framerate
         self.int_framerate = self.set_int_framerate()
@@ -30,15 +30,23 @@ class PyTimeCode(object):
         elif not frames==None:#because 0==False, and frames can be 0
             self.frames = int(frames)
             self.frames_to_tc(frame_only=True)
+        elif not start_seconds==None:#because 0==False, and frames can be 0
+            start_timecode = self.float_to_tc(start_seconds)
+            #self.set_timecode(start_timecode)
+            self.tc_to_frames()
         self.__check_drop_frame__()
         
     def set_timecode(self, timecode):
         """sets timecode to argument 'timecode'"""
         self.hrs, self.mins, self.secs, self.frs = self.parse_timecode(timecode)
         
+    def float_to_tc(self, seconds):
+        self.frames = int(seconds * self.int_framerate)
+        return self.frames_to_tc()
+        
     def tc_to_frames(self):
         """converts corrent timecode to frames"""
-        frames = (((self.hrs * 3600) + (self.mins * 60) + self.secs) * self.int_framerate) + self.frs
+        frames = int((((self.hrs * 3600) + (self.mins * 60) + self.secs) * float(self.framerate)) + self.frs)
         if self.drop_frame:
             del_frames = self.calc_drop_frames()
             frames = frames - del_frames
